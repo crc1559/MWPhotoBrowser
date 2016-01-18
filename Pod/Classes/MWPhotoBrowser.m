@@ -385,14 +385,35 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
         }
     }
     
+    if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
+        
+        self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+        self.navigationController.interactivePopGestureRecognizer.delegate = self;
+        
+    }
+    
     _viewHasAppearedInitially = YES;
         
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    
+    if ([gestureRecognizer isEqual:self.navigationController.interactivePopGestureRecognizer]) {
+        
+        return NO;
+    } else {
+        
+        return YES;
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     
     // Detect if rotation occurs while we're presenting a modal
     _pageIndexBeforeRotation = _currentPageIndex;
+    
+    self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+    self.navigationController.interactivePopGestureRecognizer.delegate = nil;
     
     // Check that we're being popped for good
     if ([self.navigationController.viewControllers objectAtIndex:0] != self &&
